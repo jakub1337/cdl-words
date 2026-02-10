@@ -1,6 +1,3 @@
-import tippy from "tippy.js";
-import "tippy.js/dist/tippy.css";
-
 /* -------------------- WORD SEGMENTATION -------------------- */
 function segment(text) {
   if (Intl?.Segmenter) {
