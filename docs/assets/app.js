@@ -1,6 +1,6 @@
-/* -------------------- WORD SEGMENTATION -------------------- */
+/* ==================== WORD SEGMENTATION ==================== */
 function segment(text) {
-  if (Intl?.Segmenter) {
+  if (window.Intl && Intl.Segmenter) {
     const s = new Intl.Segmenter("en", { granularity: "word" });
     return [...s.segment(text)].map(x => ({
       type: x.isWordLike ? "word" : "punct",
@@ -12,9 +12,10 @@ function segment(text) {
     value: v
   }));
 }
+
 const norm = s => s.toLowerCase();
 
-/* -------------------- TRANSLATION -------------------- */
+/* ==================== TRANSLATION ==================== */
 let DICT = null;
 const CACHE_KEY = "pl-cache-v1";
 const CACHE = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
@@ -22,7 +23,7 @@ const CACHE = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
 async function loadDict() {
   if (DICT) return DICT;
   try {
-    const r = await fetch("./dictionary.en-pl.json");
+    const r = await fetch("./dictionary.en-pl.json", { cache: "no-store" });
     DICT = await r.json();
   } catch {
     DICT = {};
@@ -32,12 +33,12 @@ async function loadDict() {
 
 async function translate(word) {
   word = norm(word);
-  if (DICT?.[word]) return DICT[word];
+  if (DICT[word]) return DICT[word];
   if (CACHE[word]) return CACHE[word];
 
   try {
     const r = await fetch(
-      `https://api.mymemory.translated.net/get?q=${word}&langpair=en|pl`
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|pl`
     );
     const j = await r.json();
     const t = j?.responseData?.translatedText?.toLowerCase();
@@ -51,38 +52,61 @@ async function translate(word) {
   return "(brak tłumaczenia)";
 }
 
-/* -------------------- UI HELPERS -------------------- */
+/* ==================== UI HELPERS ==================== */
 const app = document.querySelector("#app");
-const el = (t, p = {}, c = []) => {
-  const n = document.createElement(t);
-  Object.assign(n, p);
-  c.forEach(x => n.append(x));
+
+const el = (tag, props = {}, children = []) => {
+  const n = document.createElement(tag);
+  Object.assign(n, props);
+  children.forEach(c => n.append(c));
   return n;
 };
+
 const txt = t => document.createTextNode(t);
 
-/* -------------------- CLICKABLE TEXT -------------------- */
+/* ==================== SIMPLE TOOLTIP ==================== */
+function showTooltip(target, text) {
+  const tip = el("div", {
+    className: "tooltip",
+    textContent: text
+  });
+
+  document.body.append(tip);
+  const r = target.getBoundingClientRect();
+
+  tip.style.position = "fixed";
+  tip.style.top = `${r.top - 30}px`;
+  tip.style.left = `${r.left}px`;
+  tip.style.background = "#222";
+  tip.style.color = "#fff";
+  tip.style.padding = "4px 8px";
+  tip.style.borderRadius = "6px";
+  tip.style.fontSize = "13px";
+  tip.style.zIndex = "9999";
+
+  setTimeout(() => tip.remove(), 2000);
+}
+
+/* ==================== CLICKABLE TEXT ==================== */
 function renderText(text) {
-  const wrap = el("div", { className: "question" });
+  const wrap = el("span");
   const parts = segment(text);
 
   parts.forEach(p => {
     if (p.type === "word") {
-      const s = el("span", { className: "word", textContent: p.value });
-      s.onclick = async () => {
+      const s = el("span", {
+        className: "word",
+        textContent: p.value
+      });
+
+      s.onclick = async e => {
+        e.stopPropagation();
         s.style.pointerEvents = "none";
         const pl = await translate(p.value);
         s.style.pointerEvents = "";
-
-        const tip = tippy(s, {
-          content: `<b>${pl}</b>`,
-          allowHTML: true,
-          trigger: "manual",
-          placement: "top"
-        });
-        tip.show();
-        setTimeout(() => tip.destroy(), 2000);
+        showTooltip(s, pl);
       };
+
       wrap.append(s);
     } else {
       wrap.append(txt(p.value));
@@ -92,41 +116,46 @@ function renderText(text) {
   return wrap;
 }
 
-/* -------------------- APP STATE -------------------- */
+/* ==================== APP STATE ==================== */
 let questions = [];
 let index = 0;
 let selected = null;
 let revealed = false;
 
-/* -------------------- LOAD QUESTIONS -------------------- */
+/* ==================== LOAD QUESTIONS ==================== */
 async function loadQuestions() {
-  const r = await fetch("./questions.json");
+  const r = await fetch("./questions.json", { cache: "no-store" });
   questions = await r.json();
 }
 
-/* -------------------- RENDER -------------------- */
+/* ==================== RENDER ==================== */
 function render() {
   const q = questions[index];
   const root = el("div", { className: "container" });
 
-  root.append(el("h1", { textContent: "Pytanie" }));
-  root.append(renderText(q.question));
+  root.append(el("h1", { textContent: `Pytanie ${index + 1}` }));
+  root.append(el("div", {}, [renderText(q.question)]));
 
   const choices = el("div", { className: "choices" });
+
   q.choices.forEach((c, i) => {
     let cls = "choice";
     if (revealed) {
       if (i === q.answerIndex) cls += " correct";
       else if (i === selected) cls += " wrong";
+    } else if (i === selected) {
+      cls += " selected";
     }
 
     const btn = el("div", { className: cls });
     btn.append(renderText(c));
+
     btn.onclick = () => {
       if (revealed) return;
       selected = i;
       render();
     };
+
     choices.append(btn);
   });
 
@@ -135,6 +164,7 @@ function render() {
   root.append(
     el("button", {
       textContent: revealed ? "Ukryj odpowiedź" : "Sprawdź",
+      disabled: selected === null,
       onclick: () => {
         revealed = !revealed;
         render();
@@ -170,7 +200,7 @@ function render() {
   app.replaceChildren(root);
 }
 
-/* -------------------- BOOT -------------------- */
+/* ==================== BOOT ==================== */
 (async () => {
   await loadDict();
   await loadQuestions();
