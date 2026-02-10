@@ -1,0 +1,102 @@
+[
+  {
+    "id": "q100",
+    "question": "In bad weather, many drivers tailgate large vehicles. What should you do?",
+    "choices": [
+      "Increase your following distance.",
+      "Lightly tap your brake to warn the tailgater to drop back.",
+      "Speed up to distance yourself from the tailgater."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "q99",
+    "question": "Most skids:",
+    "choices": [
+      "Happen on ice.",
+      "Do not happen with radial tires.",
+      "Are caused by going too fast or trying to stop too quickly."
+    ],
+    "answerIndex": 2
+  },
+  {
+    "id": "q98",
+    "question": "Which of the following is NOT a characteristic of tire failure?",
+    "choices": [
+      "Cold steering.",
+      "Vehicle's fishtail.",
+      "Steering wheel twisting."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "q97",
+    "question": "Sometimes you need to leave a road to avoid a hazard or emergency. When you do, you should keep in mind that:",
+    "choices": [
+      "Most shoulders are not strong enough to support a heavy vehicle.",
+      "You might be unable to re-enter the road because of the gravel used on shoulders.",
+      "It is less dangerous to drive onto the shoulder than to cause a collision."
+    ],
+    "answerIndex": 1
+  },
+  {
+    "id": "q96",
+    "question": "Stab braking should not be used on vehicles with:",
+    "choices": [
+      "Anti-lock brakes.",
+      "Trailers.",
+      "Hazardous materials."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "q95",
+    "question": "You must stop on a hill or curve on a two-lane, two-way road. How far should you place reflective triangles?",
+    "choices": [
+      "Within 200 feet behind you.",
+      "As far back as necessary so others can see you.",
+      "Within 500 feet behind you."
+    ],
+    "answerIndex": 2
+  },
+  {
+    "id": "q94",
+    "question": "When you are parked on the side of the road at night, you must:",
+    "choices": [
+      "Turn on your four-way emergency flashers to warn others.",
+      "Use your taillights to give warning to other drivers.",
+      "Put out your emergency warning lights within 30 minutes."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "q93",
+    "question": "Backing of the commercial vehicle is:",
+    "choices": [
+      "Not dangerous if you don't have to turn.",
+      "Always dangerous.",
+      "Not dangerous if you have a helper."
+    ],
+    "answerIndex": 1
+  },
+  {
+    "id": "q92",
+    "question": "When driving through the work zone, you should:",
+    "choices": [
+      "Turn on your parking lights.",
+      "Watch for sharp pavement drop off.",
+      "Reduce your speed only if workers are close to the roadway."
+    ],
+    "answerIndex": 1
+  },
+  {
+    "id": "q91",
+    "question": "When driving at night, you should use your high beams when oncoming traffic is not within ____ feet?",
+    "choices": [
+      "400",
+      "300",
+      "500"
+    ],
+    "answerIndex": 0
+  }
+]
